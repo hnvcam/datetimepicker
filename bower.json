@@ -1,0 +1,29 @@
+{
+  "name": "datetimepicker",
+  "description": "Angular Date Time picker",
+  "main": "datetimepicker.js",
+  "authors": [
+    "hnvcam"
+  ],
+  "license": "MIT",
+  "keywords": [
+    "angular",
+    "datetime",
+    "picker"
+  ],
+  "homepage": "https://github.com/hnvcam/datetimepicker",
+  "moduleType": [],
+  "private": true,
+  "ignore": [
+    "**/.*",
+    "node_modules",
+    "bower_components",
+    "test",
+    "tests"
+  ],
+  "dependencies": {
+    "bootstrap-datepicker": "~1.5.0",
+    "jt.timepicker": "jquery-timepicker-jt#~1.8.8",
+    "angular": "angularjs#~1.4.8"
+  }
+}

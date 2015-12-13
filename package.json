@@ -1,0 +1,26 @@
+{
+  "name": "datetimepicker",
+  "version": "1.0.0-SNAPSHOT",
+  "description": "Angular Date Time picker",
+  "main": "datetimepicker.js",
+  "dependencies": {},
+  "devDependencies": {},
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/hnvcam/datetimepicker.git"
+  },
+  "keywords": [
+    "angular",
+    "datetime",
+    "picker"
+  ],
+  "author": "hnvcam",
+  "license": "MIT",
+  "bugs": {
+    "url": "https://github.com/hnvcam/datetimepicker/issues"
+  },
+  "homepage": "https://github.com/hnvcam/datetimepicker#readme"
+}
