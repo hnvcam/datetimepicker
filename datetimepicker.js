@@ -180,7 +180,12 @@ angular.module('ui.datetimepicker', [])
                 ngModel: '=',
                 dateFormat: '=',
                 timeFormat: '=',
-                pairWith: '='
+                pairWith: '=',
+                enabledTime: '=',
+                enabledDate: '=',
+                visibleTime: '=',
+                visibleDate: '=',
+                reversed: '='
             },
             link: link
         }
