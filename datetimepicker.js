@@ -4,7 +4,7 @@
 
  */
 angular.module('ui.datetimepicker', [])
-    .directive('datetimepicker', ['$window', function ($window) {
+    .directive('datetimepicker', ['$window', '$filter', function ($window, $filter) {
         var TEMPLATE = '<div><input type="text" class="datepicker"/><input type="text" class="timepicker"/></div>';
 
         var moment = $window.moment;
@@ -40,10 +40,10 @@ angular.module('ui.datetimepicker', [])
             }
 
             ngModel.$render = function () {
-                if (!dateElement.is(':focus')) {
+                if (!dateElement.is(':focus') && !scope.internalUpdated) {
                     dateElement.datepicker('setDate', getNgModelDateValue());
                 }
-                if (!timeElement.is(':focus')) {
+                if (!timeElement.is(':focus') && !scope.internalUpdated) {
                     timeElement.timepicker('setTime', getNgModelDateValue());
                 }
             };
@@ -65,10 +65,10 @@ angular.module('ui.datetimepicker', [])
                 scope.$evalAsync(function () {
                     var currentTime = getNgModelDateValue();
                     var newDate = toDate(dateElement.datepicker('getDate'));
-                    newDate.setUTCHours(currentTime.getUTCHours());
-                    newDate.setUTCMinutes(currentTime.getUTCMinutes());
-                    newDate.setUTCSeconds(0);
-                    newDate.setUTCMilliseconds(0);
+                    newDate.setHours(currentTime.getHours());
+                    newDate.setMinutes(currentTime.getMinutes());
+                    newDate.setSeconds(0);
+                    newDate.setMilliseconds(0);
 
                     scope.internalUpdated = true;
                     ngModel.$setViewValue(newDate);
@@ -79,9 +79,9 @@ angular.module('ui.datetimepicker', [])
                 scope.$evalAsync(function () {
                     var currentDate = getNgModelDateValue();
                     var newTime = timeElement.timepicker('getTime');
-                    newTime.setUTCDate(currentDate.getUTCDate());
-                    newTime.setUTCMonth(currentDate.getUTCMonth());
-                    newTime.setUTCFullYear(currentDate.getUTCFullYear());
+                    newTime.setDate(currentDate.getDate());
+                    newTime.setMonth(currentDate.getMonth());
+                    newTime.setFullYear(currentDate.getFullYear());
 
                     scope.internalUpdated = true;
                     ngModel.$setViewValue(newTime);
@@ -110,33 +110,65 @@ angular.module('ui.datetimepicker', [])
 
             scope.$watch('pairWith', function () {
                 if (isPaired() && !scope.internalUpdatedPairedModel) {
-                    updateThisModelToBeAfterPairedModel();
+                    scope.$evalAsync(function () {
+                        updateThisModelToBeAfterPairedModel();
+                        refreshAvailableValuesForTimePicker();
+                    });
                 }
                 scope.internalUpdatedPairedModel = false;
             }, true);
 
-            scope.$watch('ngModel', function() {
-                if (isPaired() && !scope.internalUpdatedPairedModel) {
-                    updatePairedModelToBeBeforeThisModel();
+            scope.$watch('ngModel', function () {
+                if (isPaired() && !scope.internalUpdated) {
+                    scope.$evalAsync(function () {
+                        updatePairedModelToBeBeforeThisModel();
+                        refreshAvailableValuesForTimePicker();
+                    });
                 }
-                scope.internalUpdatedPairedModel = false;
+                scope.internalUpdated = false;
             });
 
             function updateThisModelToBeAfterPairedModel() {
-
+                var thisModelDate = getNgModelDateValue();
+                var pairedModelDate = getPairedModelDateValue();
+                if (thisModelDate < pairedModelDate) {
+                    ngModel.$setViewValue(pairedModelDate);
+                }
             }
 
             function updatePairedModelToBeBeforeThisModel() {
                 var thisModelDate = getNgModelDateValue();
                 var pairedModelDate = getPairedModelDateValue();
                 if (thisModelDate < pairedModelDate) {
-                    pairedModelDate.setUTCFullYear(thisModelDate.getUTCFullYear());
-                    pairedModelDate.setUTCMonth(thisModelDate.getUTCMonth());
-                    pairedModelDate.setUTCDate(thisModelDate.getUTCDate());
+                    pairedModelDate.setFullYear(thisModelDate.getFullYear());
+                    pairedModelDate.setMonth(thisModelDate.getMonth());
+                    pairedModelDate.setDate(thisModelDate.getDate());
 
                     scope.internalUpdatedPairedModel = true;
                     scope.pairWith = pairedModelDate;
                 }
+            }
+
+            function refreshAvailableValuesForTimePicker() {
+                var thisModelDate = getNgModelDateValue();
+                var pairedModelDate = getPairedModelDateValue();
+                var minTime = '12:00 am';
+                var maxTime = '11:30 pm';
+                var showDuration = false;
+                if (daysBetween(pairedModelDate, thisModelDate) === 0) {
+                    var minTime = $filter('date')(pairedModelDate, 'hh:mm a');
+                    showDuration = true;
+                }
+
+                timeElement.timepicker('option', {
+                    'minTime': minTime,
+                    'maxTime': maxTime,
+                    'showDuration': showDuration
+                });
+            }
+
+            function daysBetween(first, second) {
+                return Math.floor(Math.abs(second.getTime() - first.getTime()) / 86400000);
             }
         }
 
