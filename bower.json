@@ -1,6 +1,6 @@
 {
     "name": "datetimepicker",
-    "version": "0.0.1",
+    "version": "0.0.2",
     "description": "Angular Date Time picker",
     "main": "datetimepicker.js",
     "authors": [
