@@ -13,17 +13,37 @@
     <script src="../bower_components/jt.timepicker/jquery.timepicker.min.js"></script>
     <script src="../datetimepicker.js"></script>
 </head>
-<body ng-app="testDateTimePicker">
+<body ng-app="testDateTimePicker" ng-controller="ExampleCtrl">
 
-<datetimepicker ng-model="datetime"></datetimepicker>
+<h3>Single input</h3>
+<datetimepicker ng-model="datetime" enabled-date="enabledDate" enabled-time="enabledTime" visible-date="visibleDate" visible-time="visibleTime" reversed="reversed"></datetimepicker>
+Selected date time: {{datetime | date: 'yyyy-MM-dd HH:mm:ss Z'}}
+<br/>
+<input type="checkbox" ng-model="enabledDate"/>Enabled Date Picker
+<br/>
+<input type="checkbox" ng-model="enabledTime"/>Enabled Time Picker
+<br/>
+<input type="checkbox" ng-model="visibleDate"/>Visible Date Picker
+<br/>
+<input type="checkbox" ng-model="visibleTime"/>Visible Time Picker
+<br/>
+<input type="checkbox" ng-model="reversed"/>Reversed
 
-Selected date time: {{datetime | date:'yyyy-MM-dd HH:mm:ss Z'}}
 
+<h3>Paired inputs</h3>
 <datetimepicker ng-model="start"></datetimepicker>
 <datetimepicker ng-model="end" pair-with="start"></datetimepicker>
+Selected range: {{start | date: 'yyyy-MM-dd HH:mm:ss Z'}} - {{end | date: 'yyyy-MM-dd HH:mm:ss Z'}}
 
 <script>
-    angular.module('testDateTimePicker', ['ui.datetimepicker']);
+    angular.module('testDateTimePicker', ['ui.datetimepicker'])
+            .controller('ExampleCtrl', function($scope) {
+                $scope.enabledDate = true;
+                $scope.enabledTime = true;
+                $scope.visibleDate = true;
+                $scope.visibleTime = true;
+                $scope.reversed = false;
+            });
 </script>
 
 </body>

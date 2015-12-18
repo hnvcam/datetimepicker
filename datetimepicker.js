@@ -5,7 +5,10 @@
  */
 angular.module('ui.datetimepicker', [])
     .directive('datetimepicker', ['$window', '$filter', function ($window, $filter) {
-        var TEMPLATE = '<div><input type="text" class="datepicker"/><input type="text" class="timepicker"/></div>';
+        var TEMPLATE = '<div>' +
+            '<input type="text" class="datepicker"/>' +
+            '<input type="text" class="timepicker"/>' +
+            '</div>';
 
         var moment = $window.moment;
 
@@ -23,13 +26,14 @@ angular.module('ui.datetimepicker', [])
         }
 
         function link(scope, element, attrs, ngModel) {
+            var dateElement = element.find('.datepicker');
+            var timeElement = element.find('.timepicker');
+            scope.dateDefaultDisplay = dateElement.css('display');
+            scope.timeDefaultDisplay = timeElement.css('display');
 
             /**
              * DateTimePicker initialization
              */
-
-            var dateElement = element.find('.datepicker');
-            var timeElement = element.find('.timepicker');
 
             scope.internalUpdated = false;
             scope.internalUpdatedPairedModel = false;
@@ -96,6 +100,40 @@ angular.module('ui.datetimepicker', [])
             timeElement.timepicker({
                 timeFormat: timeFormat
             });
+
+            /**
+             * Configuration
+             */
+            function isFalseProperty(property) {
+                var variable = scope[property];
+                return angular.isDefined(variable) && false == variable;
+            }
+
+            function configEnabled(configElement, property) {
+                scope.$watch(property, function () {
+                    configElement.prop('disabled', isFalseProperty(property));
+                });
+            }
+
+            function configVisible(configElement, property, defaultValue) {
+                scope.$watch(property, function () {
+                    configElement.css('display', isFalseProperty(property) ? 'none' : defaultValue);
+                });
+            }
+
+            scope.$watch('reversed', function() {
+                var reversed = scope['reversed'];
+                if (angular.isDefined(reversed) && true == reversed) {
+                    timeElement.prependTo(timeElement.parent());
+                } else {
+                    dateElement.prependTo(dateElement.parent());
+                }
+            });
+
+            configEnabled(dateElement, 'enabledDate');
+            configEnabled(timeElement, 'enabledTime');
+            configVisible(dateElement, 'visibleDate', scope.dateDefaultDisplay);
+            configVisible(timeElement, 'visibleTime', scope.timeDefaultDisplay);
 
             /**
              * Pair with other date model
